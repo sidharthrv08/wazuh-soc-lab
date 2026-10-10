@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Wazuh SOC Home Lab - Quick Setup &amp; GitHub Publishing Guide</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 11mm 13mm 11mm 13mm;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: #1e293b;
+      line-height: 1.45;
+      font-size: 10.5pt;
+      margin: 0;
+      padding: 0;
+    }
+    .header {
+      border-bottom: 3px solid #2563eb;
+      padding-bottom: 8px;
+      margin-bottom: 14px;
+    }
+    h1 {
+      font-size: 20pt;
+      color: #0f172a;
+      margin: 0 0 4px 0;
+    }
+    .subtitle {
+      font-size: 10.5pt;
+      color: #64748b;
+      font-weight: 500;
+    }
+    .badge {
+      display: inline-block;
+      background: #eff6ff;
+      color: #1d4ed8;
+      font-size: 8pt;
+      font-weight: 600;
+      padding: 2px 7px;
+      border-radius: 4px;
+      border: 1px solid #bfdbfe;
+      margin-right: 5px;
+    }
+    h2 {
+      font-size: 13pt;
+      color: #0f172a;
+      border-left: 4px solid #2563eb;
+      padding-left: 9px;
+      margin-top: 16px;
+      margin-bottom: 8px;
+      page-break-after: avoid;
+    }
+    h3 {
+      font-size: 11pt;
+      color: #334155;
+      margin-top: 10px;
+      margin-bottom: 4px;
+      page-break-after: avoid;
+    }
+    p {
+      margin: 0 0 6px 0;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 8px 0;
+      font-size: 9pt;
+      page-break-inside: avoid;
+    }
+    th, td {
+      border: 1px solid #cbd5e1;
+      padding: 6px 8px;
+      text-align: left;
+    }
+    th {
+      background-color: #f1f5f9;
+      color: #0f172a;
+      font-weight: 600;
+    }
+    tr:nth-child(even) td {
+      background-color: #f8fafc;
+    }
+    pre, code {
+      font-family: "Consolas", "Courier New", monospace;
+    }
+    pre {
+      background: #0f172a;
+      color: #f8fafc;
+      padding: 9px 12px;
+      border-radius: 6px;
+      font-size: 8.5pt;
+      line-height: 1.4;
+      margin: 6px 0 10px 0;
+      white-space: pre-wrap;
+      word-break: break-all;
+      page-break-inside: avoid;
+    }
+    code.inline {
+      background: #f1f5f9;
+      color: #b91c1c;
+      padding: 2px 5px;
+      border-radius: 4px;
+      font-size: 8.5pt;
+      border: 1px solid #e2e8f0;
+    }
+    .alert {
+      padding: 10px 14px;
+      border-radius: 6px;
+      margin: 12px 0;
+      font-size: 9.5pt;
+      page-break-inside: avoid;
+    }
+    .alert-tip {
+      background-color: #f0fdf4;
+      border-left: 4px solid #16a34a;
+      color: #14532d;
+    }
+    .alert-warning {
+      background-color: #fffbeb;
+      border-left: 4px solid #f59e0b;
+      color: #78350f;
+    }
+    .step-num {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      background: #2563eb;
+      color: #fff;
+      text-align: center;
+      border-radius: 50%;
+      font-size: 9pt;
+      font-weight: bold;
+      line-height: 20px;
+      margin-right: 6px;
+    }
+    .page-break {
+      page-break-before: always;
+    }
+    ul, ol {
+      margin: 0 0 10px 0;
+      padding-left: 20px;
+    }
+    li {
+      margin-bottom: 4px;
+    }
+    .footer {
+      margin-top: 30px;
+      border-top: 1px solid #e2e8f0;
+      padding-top: 8px;
+      font-size: 8.5pt;
+      color: #94a3b8;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <div class="header">
+    <h1>Wazuh SOC Home Lab</h1>
+    <div class="subtitle">Quick Deployment, Telemetry Monitoring &amp; GitHub Publishing Guide</div>
+    <div style="margin-top: 8px;">
+      <span class="badge">VirtualBox 7.x</span>
+      <span class="badge">Wazuh SIEM 4.9</span>
+      <span class="badge">Kali Linux Endpoint</span>
+      <span class="badge">Zero Python (Pure Bash &amp; XML)</span>
+      <span class="badge">MITRE ATT&amp;CK Aligned</span>
+    </div>
+  </div>
+
+  <!-- SECTION 1: ARCHITECTURE -->
+  <h2>1. Lab Architecture &amp; Resource Sizing</h2>
+  <p>The SOC home lab consists of two virtual machines operating within an isolated <strong>VirtualBox NAT Network</strong>. This enables secure traffic routing between the SIEM manager and the endpoint while exposing the web dashboard to the host browser.</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Role / VM Name</th>
+        <th>Operating System</th>
+        <th>Allocated RAM</th>
+        <th>vCPUs</th>
+        <th>Network IP (DHCP)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Wazuh SIEM Server</strong></td>
+        <td>Ubuntu Server 22.04 LTS</td>
+        <td><strong>2.5 GB &ndash; 3 GB</strong></td>
+        <td>2 CPUs</td>
+        <td>192.168.100.10 (Example)</td>
+      </tr>
+      <tr>
+        <td><strong>Monitored Endpoint</strong></td>
+        <td>Kali Linux (amd64)</td>
+        <td><strong>1.5 GB &ndash; 2 GB</strong></td>
+        <td>1 CPU</td>
+        <td>192.168.100.20 (Example)</td>
+      </tr>
+      <tr>
+        <td><strong>Host System</strong></td>
+        <td>Windows 10 / 11</td>
+        <td>Remaining (~2 GB)</td>
+        <td>Host</td>
+        <td>Host Browser: https://&lt;WAZUH_IP&gt;</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="alert alert-tip">
+    <strong>Low-RAM Optimization:</strong> Wazuh utilizes OpenSearch for indexing. On systems with 6&ndash;8 GB total RAM, a 2 GB swapfile on the Ubuntu server and setting JVM heap to <code class="inline">-Xms512m -Xmx1g</code> prevents memory exhaustion.
+  </div>
+
+  <!-- SECTION 2: VIRTUALBOX NETWORK SETUP -->
+  <h2>2. VirtualBox Network Configuration</h2>
+  <ol>
+    <li>Open <strong>VirtualBox</strong> &rarr; <strong>File</strong> &rarr; <strong>Tools</strong> &rarr; <strong>Network Manager</strong> &rarr; <strong>NAT Networks</strong>.</li>
+    <li>Ensure the NAT Network named <strong><code class="inline">SOCNet</code></strong> (CIDR: <code class="inline">192.168.100.0/24</code>, DHCP: Enabled) is present.</li>
+    <li>For both the <strong>Wazuh Server VM</strong> and the <strong>Kali Linux VM</strong>:
+      <ul>
+        <li>Right-click VM &rarr; <strong>Settings</strong> &rarr; <strong>Network</strong> &rarr; <strong>Adapter 1</strong>.</li>
+        <li>Set <em>Attached to</em>: <strong>NAT Network</strong>.</li>
+        <li>Set <em>Name</em>: <strong>SOCNet</strong>.</li>
+      </ul>
+    </li>
+  </ol>
+
+  <!-- SECTION 3: WAZUH SERVER SETUP -->
+  <h2>3. Deploying Wazuh SIEM Server (Ubuntu VM)</h2>
+  <p>Boot the Ubuntu 22.04 VM and run these commands in the terminal (zero Python required):</p>
+
+  <h3>Step 3.1: Configure Swapfile (Memory Buffer)</h3>
+  <pre>sudo fallocate -l 2G /swapfile
+sudo chmod 600 /swapfile
+sudo mkswap /swapfile
+sudo swapon /swapfile
+echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab</pre>
+
+  <h3>Step 3.2: Run Official All-In-One Automated Installer</h3>
+  <pre>curl -sO https://packages.wazuh.com/4.9/wazuh-install.sh
+sudo bash ./wazuh-install.sh -a</pre>
+
+  <div class="alert alert-warning">
+    <strong>Important:</strong> When the installer finishes, it displays the web dashboard URL, username (<code class="inline">admin</code>), and a unique password. <strong>Record these credentials immediately!</strong>
+  </div>
+
+  <h3>Step 3.3: Adjust Indexer Memory Heap</h3>
+  <pre>sudo sed -i 's/-Xms1g/-Xms512m/g' /etc/wazuh-indexer/jvm.options
+sudo sed -i 's/-Xmx1g/-Xmx1g/g' /etc/wazuh-indexer/jvm.options
+sudo systemctl restart wazuh-indexer</pre>
+
+  <!-- SECTION 4: KALI LINUX AGENT SETUP -->
+  <h2>4. Enrolling the Kali Linux Monitored Endpoint</h2>
+
+  <h3>Step 4.1: Run the Automated Agent Setup Script</h3>
+  <p>Boot your Kali Linux VM and execute the installer script included in the repository:</p>
+  <pre>sudo bash scripts/install-agent.sh &lt;WAZUH_SERVER_IP&gt;</pre>
+  <p>Or perform manual enrollment:</p>
+  <pre>curl -s https://packages.wazuh.com/key/GPG-KEY-WAZUH | gpg --no-default-keyring --keyring gnupg-ring:/usr/share/keyrings/wazuh.gpg --import
+chmod 644 /usr/share/keyrings/wazuh.gpg
+echo "deb [signed-by=/usr/share/keyrings/wazuh.gpg] https://packages.wazuh.com/4.x/apt/ stable main" | sudo tee -a /etc/apt/sources.list.d/wazuh.list
+sudo apt-get update -y
+sudo WAZUH_MANAGER="&lt;WAZUH_SERVER_IP&gt;" apt-get install -y wazuh-agent
+sudo systemctl daemon-reload &amp;&amp; sudo systemctl enable --now wazuh-agent</pre>
+
+  <h3>Step 4.2: Enable Auditd Kernel Telemetry</h3>
+  <p>Deploy the custom audit rules to track command execution (<code class="inline">execve</code>) and authentication tampering:</p>
+  <pre>sudo cp configs/audit.rules /etc/audit/rules.d/wazuh-soc.rules
+sudo augenrules --load
+sudo systemctl restart auditd</pre>
+
+  <h3>Step 4.3: Verify Enrollment</h3>
+  <p>Open your host browser at <code class="inline">https://&lt;WAZUH_SERVER_IP&gt;</code>, log in as <code class="inline">admin</code>, and navigate to <strong>Server Management &rarr; Endpoints Summary</strong>. Your Kali VM will show status: <strong>Active</strong>.</p>
+
+  <!-- SECTION 5: ATTACK SIMULATIONS -->
+  <h2>5. Attack Simulations &amp; Telemetry Verification</h2>
+  <p>Execute the following simulations from the Kali VM terminal to validate SIEM alerting:</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Simulation Test</th>
+        <th>Script / Command</th>
+        <th>Triggered Rule IDs</th>
+        <th>MITRE ATT&amp;CK</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>SSH Brute Force</strong></td>
+        <td><code class="inline">bash scripts/attack-ssh-bruteforce.sh 127.0.0.1 22</code></td>
+        <td><strong>5710, 5712, 100002</strong></td>
+        <td>T1110.001 (Brute Force)</td>
+      </tr>
+      <tr>
+        <td><strong>FIM File Tampering</strong></td>
+        <td><code class="inline">sudo bash scripts/attack-fim-tamper.sh</code></td>
+        <td><strong>550, 554, 100001</strong></td>
+        <td>T1098 (Account Manipulation)</td>
+      </tr>
+      <tr>
+        <td><strong>Sudo Privilege Probe</strong></td>
+        <td><code class="inline">bash scripts/attack-privesc-check.sh</code></td>
+        <td><strong>5404, 100003</strong></td>
+        <td>T1548.003 (Sudo Probing)</td>
+      </tr>
+      <tr>
+        <td><strong>Defense Evasion</strong></td>
+        <td><code class="inline">bash scripts/attack-privesc-check.sh</code></td>
+        <td><strong>100005</strong></td>
+        <td>T1070.003 (Clear History)</td>
+      </tr>
+      <tr>
+        <td><strong>Network Recon</strong></td>
+        <td><code class="inline">bash scripts/attack-recon-scan.sh &lt;IP&gt;</code></td>
+        <td>Audit &amp; Connection bursts</td>
+        <td>T1046 (Network Discovery)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- SECTION 6: GITHUB PUBLISHING -->
+  <h2>6. How to Push the Project to GitHub</h2>
+  <p>The repository at <code class="inline">C:\Users\Sidharth\wazuh-soc-lab</code> is already structured, documented, and staged with all files.</p>
+
+  <h3>Step 6.1: Set Your Git Identity (PowerShell on Host)</h3>
+  <pre>git config --global user.name "Your Name"
+git config --global user.email "your.email@example.com"</pre>
+
+  <h3>Step 6.2: Create the Initial Commit</h3>
+  <pre>cd C:\Users\Sidharth\wazuh-soc-lab
+git commit -m "feat: complete Wazuh SOC home lab setup, configs, and attack simulations"</pre>
+
+  <h3>Step 6.3: Create an Empty Repository on GitHub</h3>
+  <ol>
+    <li>Log into your GitHub account in your web browser.</li>
+    <li>Go to <a href="https://github.com/new">https://github.com/new</a>.</li>
+    <li>Set <strong>Repository name</strong> to: <code class="inline">wazuh-soc-lab</code>.</li>
+    <li>Choose <strong>Public</strong> (recommended for cybersecurity portfolios).</li>
+    <li><strong>Uncheck</strong> "Add a README file", "Add .gitignore", and "Choose a license" (the local project already has all three!).</li>
+    <li>Click <strong>Create repository</strong>.</li>
+  </ol>
+
+  <h3>Step 6.4: Link Remote &amp; Push</h3>
+  <pre>git branch -M main
+git remote add origin https://github.com/&lt;YOUR_GITHUB_USERNAME&gt;/wazuh-soc-lab.git
+git push -u origin main</pre>
+
+  <div class="alert alert-tip">
+    <strong>Authentication Tip:</strong> When prompted by GitHub for credentials, enter your GitHub username and use a <strong>Personal Access Token (PAT)</strong> (generated in GitHub Settings &rarr; Developer settings &rarr; Personal access tokens) as your password.
+  </div>
+
+  <div class="footer">
+    Wazuh SOC Home Lab Project &bull; Built with Wazuh, VirtualBox &amp; Kali Linux &bull; Zero Python Architecture
+  </div>
+
+</body>
+</html>
